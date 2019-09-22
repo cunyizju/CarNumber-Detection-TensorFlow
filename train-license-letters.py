@@ -7,8 +7,6 @@ Created on Thu May 30 14:20:50 2019
 When run the main function repeatedly, it is wise to add 'tf.reset_default_graph()'
 at the command windows, as it would clear all the data preserved in the last running.
 Otherwise, errors may take place.
-
-
 @author: lcy
 """
  

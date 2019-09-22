@@ -1,5 +1,13 @@
 #!/usr/bin/python3.6
 # -*- coding: utf-8 -*-  
+
+"""
+Created on Thu May 30 14:20:50 2019
+When run the main function repeatedly, it is wise to add 'tf.reset_default_graph()'
+at the command windows, as it would clear all the data preserved in the last running.
+Otherwise, errors may take place.
+@author: lcy
+"""
  
 import sys
 import os
@@ -33,13 +41,13 @@ y_ = tf.placeholder(tf.float32, shape=[None, NUM_CLASSES])
 x_image = tf.reshape(x, [-1, WIDTH, HEIGHT, 1])
  
  
-# 定义卷积函数
+# define convolutional function
 def conv_layer(inputs, W, b, conv_strides, kernel_size, pool_strides, padding):
     L1_conv = tf.nn.conv2d(inputs, W, strides=conv_strides, padding=padding)
     L1_relu = tf.nn.relu(L1_conv + b)
     return tf.nn.max_pool(L1_relu, ksize=kernel_size, strides=pool_strides, padding='SAME')
  
-# 定义全连接层函数
+# define connected layer function
 def full_connect(inputs, W, b):
     return tf.nn.relu(tf.matmul(inputs, W) + b)
  
@@ -155,7 +163,7 @@ if __name__ =='__main__' and sys.argv[1]=='train':
         sess.run(tf.global_variables_initializer())
  
         time_elapsed = time.time() - time_begin
-        print("读取图片文件耗费时间：%d秒" % time_elapsed)
+        print("reading photos costs: %dsec" % time_elapsed)
         time_begin = time.time()
  
         print ("一共读取了 %s 个训练图像， %s 个标签" % (input_count, input_count))
@@ -184,16 +192,16 @@ if __name__ =='__main__' and sys.argv[1]=='train':
                 if iterate_accuracy >= 0.9999 and it >= iterations:
                     break;
  
-        print ('完成训练!')
+        print ('training finished!')
         time_elapsed = time.time() - time_begin
-        print ("训练耗费时间：%d秒" % time_elapsed)
+        print ("training costs%dsec" % time_elapsed)
         time_begin = time.time()
  
-        # 保存训练结果
+        # save training results
         if not os.path.exists(SAVER_DIR):
-            print ('不存在训练数据保存目录，现在创建保存目录')
+            print ('There do not exsit directories to save training results. Now create the directories.')
             os.makedirs(SAVER_DIR)
-        # 初始化saver
+        # initialize saver
         saver = tf.train.Saver()            
         saver_path = saver.save(sess, "%smodel.ckpt"%(SAVER_DIR))
  
@@ -205,7 +213,7 @@ if __name__ =='__main__' and sys.argv[1]=='predict':
         model_file=tf.train.latest_checkpoint(SAVER_DIR)
         saver.restore(sess, model_file)
  
-        # 第一个卷积层
+        # the first convolutional layer
         W_conv1 = sess.graph.get_tensor_by_name("W_conv1:0")
         b_conv1 = sess.graph.get_tensor_by_name("b_conv1:0")
         conv_strides = [1, 1, 1, 1]
@@ -213,7 +221,7 @@ if __name__ =='__main__' and sys.argv[1]=='predict':
         pool_strides = [1, 2, 2, 1]
         L1_pool = conv_layer(x_image, W_conv1, b_conv1, conv_strides, kernel_size, pool_strides, padding='SAME')
  
-        # 第二个卷积层
+        # the second convolutional layer
         W_conv2 = sess.graph.get_tensor_by_name("W_conv2:0")
         b_conv2 = sess.graph.get_tensor_by_name("b_conv2:0")
         conv_strides = [1, 1, 1, 1]
@@ -222,7 +230,7 @@ if __name__ =='__main__' and sys.argv[1]=='predict':
         L2_pool = conv_layer(L1_pool, W_conv2, b_conv2, conv_strides, kernel_size, pool_strides, padding='SAME')
  
  
-        # 全连接层
+        # connected layer
         W_fc1 = sess.graph.get_tensor_by_name("W_fc1:0")
         b_fc1 = sess.graph.get_tensor_by_name("b_fc1:0")
         h_pool2_flat = tf.reshape(L2_pool, [-1, 16 * 20*32])
@@ -235,7 +243,7 @@ if __name__ =='__main__' and sys.argv[1]=='predict':
         h_fc1_drop = tf.nn.dropout(h_fc1, keep_prob)
  
  
-        # readout层
+        # readout layer
         W_fc2 = sess.graph.get_tensor_by_name("W_fc2:0")
         b_fc2 = sess.graph.get_tensor_by_name("b_fc2:0")
  
@@ -279,6 +287,6 @@ if __name__ =='__main__' and sys.argv[1]=='predict':
                     continue
             
             license_num = license_num + LETTERS_DIGITS[max1_index]
-            print ("概率：  [%s %0.2f%%]    [%s %0.2f%%]    [%s %0.2f%%]" % (LETTERS_DIGITS[max1_index],max1*100, LETTERS_DIGITS[max2_index],max2*100, LETTERS_DIGITS[max3_index],max3*100))
+            print ("possibility  [%s %0.2f%%]    [%s %0.2f%%]    [%s %0.2f%%]" % (LETTERS_DIGITS[max1_index],max1*100, LETTERS_DIGITS[max2_index],max2*100, LETTERS_DIGITS[max3_index],max3*100))
             
-        print ("车牌编号是: 【%s】" % license_num)
+        print ("car number: 【%s】" % license_num)

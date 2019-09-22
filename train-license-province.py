@@ -1,28 +1,35 @@
 #!/usr/bin/python3.6
 # -*- coding: utf-8 -*-  
- 
+
+"""
+Created on Thu May 30 14:20:50 2019
+When run the main function repeatedly, it is wise to add 'tf.reset_default_graph()'
+at the command windows, as it would clear all the data preserved in the last running.
+Otherwise, errors may take place.
+@author: lcy
+"""
+
 import sys
 import os
 import time
 import random
- 
 import numpy as np
+import matplotlib.pyplot as plt
 import tensorflow as tf
- 
 from PIL import Image
- 
  
 SIZE = 1280
 WIDTH = 32
 HEIGHT = 40
 NUM_CLASSES = 6
 iterations = 50
- 
+
 SAVER_DIR = "train-saver/province/"
- 
 PROVINCES = ("京","闽","粤","苏","沪","浙")
 nProvinceIndex = 0
- 
+_it = []
+_iterate_accuracy = []
+
 time_begin = time.time()
  
  
@@ -181,16 +188,23 @@ if __name__ =='__main__' and sys.argv[1]=='train':
  
             # 每完成五次迭代，判断准确度是否已达到100%，达到则退出迭代循环
             iterate_accuracy = 0
+
             if it%5 == 0:
                 iterate_accuracy = accuracy.eval(feed_dict={x: val_images, y_: val_labels, keep_prob: 1.0})
                 print ('第 %d 次训练迭代: 准确率 %0.5f%%' % (it, iterate_accuracy*100))
+                _it.append(it)
+                _iterate_accuracy.append(iterate_accuracy)
+                print(_it,_iterate_accuracy)
                 if iterate_accuracy >= 0.9999 and it >= 150:
-                    break;
- 
+                    break;         
+
         print ('完成训练!')
         time_elapsed = time.time() - time_begin
         print ("训练耗费时间：%d秒" % time_elapsed)
         time_begin = time.time()
+        plt.plot(_it,_iterate_accuracy)
+        plt.savefig('./train-license-province-pic')
+        plt.show()
  
         # 保存训练结果
         if not os.path.exists(SAVER_DIR):
