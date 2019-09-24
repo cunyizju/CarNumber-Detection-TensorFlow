@@ -116,21 +116,17 @@ if __name__ =='__main__' and sys.argv[1]=='train':
                             val_images[index][w+h*width] = 1
                 val_labels[index][i] = 1
                 index += 1
-    #remember: DO NOT try to run tensorflow core more than one program in a single computer .
+    #remember: DO NOT try to run tensorflow core more than one program in a single computer with only one GPU device.
 
-    #per_process_gpu_memory_fraction: determine the upper limit for each GPU memory.
-    #yet it can only function on GPU uniformly.
-    #it cannot set individual GPU memory limit for each GPU device .
-
-    #
-
+    # per_process_gpu_memory_fraction: determine the upper limit for each GPU memory.
+    # yet it can only function on GPU uniformly.
+    # it cannot set individual GPU memory limit for each GPU device .
 
     config = tf.ConfigProto(allow_soft_placement=True)
     gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.6)
     config.gpu_options.allow_growth = True
     #gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.1, allow_soft_placement = True, log_device_placement = True)
     with tf.Session(config=config) as sess: 
-        
         # the first convolutional layer
         W_conv1 = tf.Variable(tf.truncated_normal([8, 8, 1, 16], stddev=0.1), name="W_conv1")
         b_conv1 = tf.Variable(tf.constant(0.1, shape=[16]), name="b_conv1")
@@ -153,12 +149,11 @@ if __name__ =='__main__' and sys.argv[1]=='train':
         h_pool2_flat = tf.reshape(L2_pool, [-1, 16 * 20*32])
         h_fc1 = full_connect(h_pool2_flat, W_fc1, b_fc1)
  
- 
         # dropout
         keep_prob = tf.placeholder(tf.float32)
         h_fc1_drop = tf.nn.dropout(h_fc1, keep_prob)
  
-        # readout层
+        # readout layer
         W_fc2 = tf.Variable(tf.truncated_normal([512, NUM_CLASSES], stddev=0.1), name="W_fc2")
         b_fc2 = tf.Variable(tf.constant(0.1, shape=[NUM_CLASSES]), name="b_fc2")
  
@@ -178,7 +173,10 @@ if __name__ =='__main__' and sys.argv[1]=='train':
  
         print ("program has read %s images for training, with %s labels" % (input_count, input_count))
  
-        # 设置每次训练op的输入个数和迭代次数，这里为了支持任意图片总数，定义了一个余数remainder，譬如，如果每次训练op的输入个数为60，图片总数为150张，则前面两次各输入60张，最后一次输入30张（余数30）
+        # set the number of op and iterations for each training. in order to enable any given number of total photos, 
+        # a remainder is defined here. For instance, when the total number of photos is 150 and each training 60 photos, 
+        # then the remainder is 30.
+
         batch_size = 60
         iterations = iterations
         batches_count = int(input_count / batch_size)
@@ -227,8 +225,14 @@ if __name__ =='__main__' and sys.argv[1]=='train':
  
  
 if __name__ =='__main__' and sys.argv[1]=='predict':
+    # open the training data
     saver = tf.train.import_meta_graph("%smodel.ckpt.meta"%(SAVER_DIR))
-    with tf.Session() as sess:
+
+    config = tf.ConfigProto(allow_soft_placement=True)
+    gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.6)
+    config.gpu_options.allow_growth = True
+    #gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.1, allow_soft_placement = True, log_device_placement = True)
+    with tf.Session(config=config) as sess: 
         model_file=tf.train.latest_checkpoint(SAVER_DIR)
         saver.restore(sess, model_file)
  
@@ -255,18 +259,16 @@ if __name__ =='__main__' and sys.argv[1]=='predict':
         h_pool2_flat = tf.reshape(L2_pool, [-1, 16 * 20*32])
         h_fc1 = full_connect(h_pool2_flat, W_fc1, b_fc1)
  
- 
         # dropout
         keep_prob = tf.placeholder(tf.float32)
  
         h_fc1_drop = tf.nn.dropout(h_fc1, keep_prob)
  
- 
         # readout layer
         W_fc2 = sess.graph.get_tensor_by_name("W_fc2:0")
         b_fc2 = sess.graph.get_tensor_by_name("b_fc2:0")
  
-        # 定义优化器和训练op
+        # Define optimizers and train Op
         conv = tf.nn.softmax(tf.matmul(h_fc1_drop, W_fc2) + b_fc2)
  
         for n in range(3,8):
@@ -308,4 +310,4 @@ if __name__ =='__main__' and sys.argv[1]=='predict':
             license_num = license_num + LETTERS_DIGITS[max1_index]
             print ("possibility  [%s %0.2f%%]    [%s %0.2f%%]    [%s %0.2f%%]" % (LETTERS_DIGITS[max1_index],max1*100, LETTERS_DIGITS[max2_index],max2*100, LETTERS_DIGITS[max3_index],max3*100))
             
-        print ("car number: 【%s】" % license_num)
+        print ("car number: [%s]" % license_num)
