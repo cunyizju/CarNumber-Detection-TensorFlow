@@ -122,7 +122,7 @@ if __name__ =='__main__' and sys.argv[1]=='train':
     # yet it can only function on GPU uniformly.
     # it cannot set individual GPU memory limit for each GPU device .
 
-    config = tf.ConfigProto(allow_soft_placement=True)
+    config = tf.ConfigProto(allow_soft_placement=True, log_device_placement=True)
     gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.6)
     config.gpu_options.allow_growth = True
     #gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.1, allow_soft_placement = True, log_device_placement = True)
