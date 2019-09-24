@@ -13,5 +13,5 @@ cuda:9.0
 training: input the below command: python digits.py train  
 predict: input the below command: python digits.py predict  
 
-https://github.com/cunyizju/CarNumber-Detection-TensorFlow/blob/master/digits-train-accuracy.png
+![digits-train-accuracy]https://github.com/cunyizju/CarNumber-Detection-TensorFlow/blob/master/digits-train-accuracy.png
 
