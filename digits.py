@@ -185,14 +185,12 @@ if __name__ =='__main__' and sys.argv[1]=='train':
  
         # execute iterations-training loop
         for it in range(iterations):
-            # 这里的关键是要把输入数组转为np.array
             for n in range(batches_count):
                 train_step.run(feed_dict={x: input_images[n*batch_size:(n+1)*batch_size], y_: input_labels[n*batch_size:(n+1)*batch_size], keep_prob: 0.5})
             if remainder > 0:
                 start_index = batches_count * batch_size;
                 train_step.run(feed_dict={x: input_images[start_index:input_count-1], y_: input_labels[start_index:input_count-1], keep_prob: 0.5})
  
-            # 每完成五次迭代，判断准确度是否已达到100%，达到则退出迭代循环
             iterate_accuracy = 0
             if it%5 == 0:
                 iterate_accuracy = accuracy.eval(feed_dict={x: val_images, y_: val_labels, keep_prob: 1.0})
