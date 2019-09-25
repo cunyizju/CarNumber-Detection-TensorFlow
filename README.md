@@ -1,4 +1,4 @@
-# Car Number Detection using tensorflow
+# Car Number Detection using tensorflow 
 This repository is to detect car numbers using tensorflow.
 The data is stored in the directory of test_images and train_images.
 To learn how tensorflow works, please visit  https://github.com/tensorflow/ 
@@ -13,5 +13,5 @@ cuda:9.0
 training: input the below command: python digits.py train  
 predict: input the below command: python digits.py predict  
 
-![digits-train-accuracy]https://github.com/cunyizju/CarNumber-Detection-TensorFlow/blob/master/digits-train-accuracy.png
+![digits-train-accuracy](https://github.com/cunyizju/CarNumber-Detection-TensorFlow/blob/master/digits-train-accuracy.png)
 
