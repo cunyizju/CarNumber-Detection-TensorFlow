@@ -10,8 +10,8 @@ tensorflow: 1.8
 cuda:9.0  
 
 ## How to run it?
-training: input the below command: python digits.py train  
-predict: input the below command: python digits.py predict  
+training: run the command: python digits.py train  
+predict: run the command: python digits.py predict  
 
 ![digits-train-accuracy](https://github.com/cunyizju/CarNumber-Detection-TensorFlow/blob/master/digits-train-accuracy.png)
 
